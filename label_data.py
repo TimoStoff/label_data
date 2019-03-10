@@ -8,8 +8,12 @@ import matplotlib.pyplot as plt
 import os
 
 data_dir = "data/images/"
-labels_file = "data/images/hand_labelled3.json"
-save_file = "data/images/hand_labelled3.json"
+labels_file = "data/images/hand_labelled.json"
+save_file = "data/images/hand_labelled.json"
+
+# If you want to skip ahead, eg to image IMG_0252.JPG, the change to goto_file="IMG_0252.JPG"
+# Else goto_file = ""
+goto_file = ""
 
 index=range(0,1)
 columns=[]
@@ -68,9 +72,7 @@ def onclick(event):
           ('double' if event.dblclick else 'single', event.button,
            event.x, event.y, event.xdata, event.ydata))
 
-    print(selected_points)
     point = [int(event.xdata), int(event.ydata)]
-    print(point)
     selected_points.append(point)
     print(selected_points)
     polygon = np.array(selected_points)
@@ -79,18 +81,21 @@ def onclick(event):
     # update_image(img, polygon)
 
     if len(selected_points) == 4:
-        print("done")
+        print("Done")
         polygon_complete = True
         selected_points = []
         idx = idx+1
         plt.close()
 
 
-# print labels.iloc[0][0]
-# print labels.loc[0]["IMG_0005.JPG"]
-# nparr = np.array([1, 2, 3, 4, 5, 6, 7, 8])
-# arr = np.array2string(nparr)
-# labels["timo"] = arr
+# Skip ahead to image goto_file
+json_file = ""
+if goto_file != "":
+    while json_file != goto_file:
+        path = images_path[idx]
+        json_file = (os.path.basename(path))
+        if json_file != goto_file:
+            idx = idx+1
 
 
 while idx < len(images_path):
@@ -98,7 +103,7 @@ while idx < len(images_path):
     path = images_path[idx]
     # print(path)
     filename = (os.path.basename(path))
-    print(filename)
+    print("Labelling image ", filename)
     img = cv2.imread(path)
 
     fig, ax = plt.subplots()
