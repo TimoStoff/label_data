@@ -7,9 +7,12 @@ import matplotlib
 import matplotlib.pyplot as plt
 import os
 
-data_dir = "data/images/"
-labels_file = "data/images/hand_labelled.json"
-save_file = "data/images/hand_labelled.json"
+data_dir = "data/images/me/"
+labels_file = "data/images/me/hand_labelled.json"
+save_file = "data/images/me/hand_labelled.json"
+
+#Scaling factor to make plot bigger or smaller
+resize = 3.5
 
 # If you want to skip ahead, eg to image IMG_0252.JPG, the change to goto_file="IMG_0252.JPG"
 # Else goto_file = ""
@@ -60,7 +63,6 @@ def press(event):
         polygon = np.array(selected_points)
         plt.close()
 
-
 def onclick(event):
     global selected_points
     global polygon_complete
@@ -76,9 +78,8 @@ def onclick(event):
     selected_points.append(point)
     print(selected_points)
     polygon = np.array(selected_points)
-
     plt.close()
-    # update_image(img, polygon)
+
 
     if len(selected_points) == 4:
         print("Done")
@@ -97,6 +98,15 @@ if goto_file != "":
         if json_file != goto_file:
             idx = idx+1
 
+#Resize the plot
+fig_size = plt.rcParams["figure.figsize"]
+print "Current size:", fig_size
+fig_size = [fig_size[0] * resize, fig_size[1] * resize]
+plt.rcParams["figure.figsize"] = fig_size
+
+# plt.ion()
+# fig = plt.figure()
+# ax = fig.add_subplot(111)
 
 while idx < len(images_path):
 
@@ -107,12 +117,13 @@ while idx < len(images_path):
     img = cv2.imread(path)
 
     fig, ax = plt.subplots()
+
     fig.canvas.mpl_connect('key_press_event', press)
     cid = fig.canvas.mpl_connect('button_press_event', onclick)
 
-
-    img = cv2.polylines(img, [np.int32(polygon)], True, (255, 0, 0), 5, cv2.LINE_AA)
+    img = cv2.polylines(img, [np.int32(polygon)], True, (255, 0, 0), 1, cv2.LINE_AA)
     imgplot = ax.imshow(img)
+
     plt.show()
 
     if polygon_complete:
